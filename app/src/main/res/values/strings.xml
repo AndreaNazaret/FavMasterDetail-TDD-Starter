@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Fav Master-Detail</string>
+
+    <string name="title_category_list">Category List</string>
+    <string name="title_product_list">Product List</string>
+    <string name="title_product_detail">Product Details</string>
+
+    <!--
+    <string name="title_category_list">Categories</string>
+    <string name="title_product_list">Products</string>
+    <string name="title_product_detail">Product</string>
+    -->
+</resources>
