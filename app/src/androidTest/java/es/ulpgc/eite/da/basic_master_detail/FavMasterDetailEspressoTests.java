@@ -36,14 +36,14 @@ import es.ulpgc.eite.da.basic_master_detail.categories.CategoryListActivity;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MasterDetailFavEspressoTests {
+public class FavMasterDetailEspressoTests {
 
     @Rule
     public ActivityScenarioRule<CategoryListActivity> testRule =
         new ActivityScenarioRule<>(CategoryListActivity.class);
 
     @Test
-    public void extraTest() {
+    public void testFavoritesFlow() {
 
         // mostrar lista de categorias
 

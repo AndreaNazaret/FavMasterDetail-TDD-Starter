@@ -16,7 +16,7 @@
       <SelectionState runConfigName="MasterDetailEspressoTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MasterDetailFavEspressoTests">
+      <SelectionState runConfigName="FavMasterDetailEspressoTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
