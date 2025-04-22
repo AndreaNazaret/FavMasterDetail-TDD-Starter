@@ -5,9 +5,12 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 
 import es.ulpgc.eite.da.basic_master_detail.app.AppMediator;
+import es.ulpgc.eite.da.basic_master_detail.app.CategoryToProductListState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductDetailToListState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductListToDetailState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductToCategoryListState;
+import es.ulpgc.eite.da.basic_master_detail.categories.CategoryListState;
+import es.ulpgc.eite.da.basic_master_detail.data.ProductItem;
 
 
 // Project: Basic Master-Detail
@@ -34,7 +37,15 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
         state = new ProductDetailState();
 
         // TODO: include code if necessary
+        if (state.product == null) {
+            ProductListToDetailState previusState = getStateFromPreviousScreen();
+            ProductItem product = previusState.product;
+            boolean productFavorite = previusState.isFavorite;
+            model.onUpdatedDataFromPreviousScreen(product, productFavorite);
 
+            state.product = product;
+            state.isFavorite = productFavorite;
+        }
     }
 
     @Override
@@ -42,6 +53,8 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
         Log.e(TAG, "onRecreateCalled()");
 
         // TODO: include code if necessary
+        state = getSavedScreenState();
+       // model.onUpdatedDataFromRecreatedScreen(state.product, state.isFavorite);
     }
 
     @Override
@@ -51,6 +64,16 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
         // TODO: include code if necessary
 
         // update the view
+        if (state == null) {
+            state = new ProductDetailState();
+            ProductListToDetailState previusState = getStateFromPreviousScreen();
+            ProductItem product = previusState.product;
+            boolean productFavorite = previusState.isFavorite;
+            model.onUpdatedDataFromPreviousScreen(product, productFavorite);
+
+            state.product = product;
+            state.isFavorite = productFavorite;
+        }
         view.get().onRefreshViewWithUpdatedData(state);
 
     }
@@ -61,6 +84,13 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
 
         // TODO: include code if necessary
 
+        ProductDetailToListState passState=new ProductDetailToListState();
+        passState.isFavorite= state.isFavorite;
+        passState.product=state.product;
+        passStateToPreviousScreen(passState);
+
+
+        view.get().navigateToPreviousScreen();
     }
 
     @Override
@@ -68,6 +98,7 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
         Log.e(TAG, "onPauseCalled()");
 
         // TODO: include code if necessary
+        saveScreenState();
     }
 
     @Override
@@ -81,6 +112,13 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
         Log.e(TAG, "onFavoriteButtonClicked()");
 
         // TODO: include code if necessary
+        state.isFavorite=!state.isFavorite;
+
+        model.onUpdatedDataFromRecreatedScreen(state.product, state.isFavorite);
+
+        saveScreenState();
+
+        view.get().onRefreshViewWithUpdatedData(state);
     }
 
     private ProductDetailState getSavedScreenState() {

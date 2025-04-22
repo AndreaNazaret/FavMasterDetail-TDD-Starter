@@ -3,12 +3,15 @@ package es.ulpgc.eite.da.basic_master_detail.products;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 import es.ulpgc.eite.da.basic_master_detail.app.AppMediator;
 import es.ulpgc.eite.da.basic_master_detail.app.CategoryToProductListState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductDetailToListState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductListToDetailState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductToCategoryListState;
+import es.ulpgc.eite.da.basic_master_detail.categories.CategoryListState;
+import es.ulpgc.eite.da.basic_master_detail.data.CategoryItem;
 import es.ulpgc.eite.da.basic_master_detail.data.ProductItem;
 
 
@@ -35,9 +38,26 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         // call the mediator initialize the state
         state = new ProductListState();
 
+        ProductDetailToListState FavoriteState = getStateFromNextScreen();
+        if (FavoriteState != null) {
+            model.onUpdatedDataFromNextScreen(FavoriteState.product, FavoriteState.isFavorite);
+        }
+
+        if (state == null) {
+            state = getSavedScreenState();
+        }
 
         // TODO: include code if necessary
+        if (state.category == null) {
+            CategoryToProductListState previousState = getStateFromPreviousScreen();
+            CategoryItem category = previousState.category;
 
+            model.onUpdatedDataFromPreviousScreen(category, model.getStoredData());
+
+            state.category = model.getCatalogData();
+        }
+
+        state.favorites = model.getStoredData();
     }
 
     @Override
@@ -45,17 +65,41 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         Log.e(TAG, "onRecreateCalled()");
 
         // TODO: include code if necessary
+        state = getSavedScreenState();
+        model.onUpdatedDataFromRecreatedScreen(state.category, state.favorites);
+        state.favorites = model.getStoredData();
+
     }
 
     @Override
     public void onResumeCalled() {
         Log.e(TAG, "onResumeCalled()");
 
-
         // TODO: include code if necessary
+        if (state == null) {
+            state = getSavedScreenState();
+        }
+
+        if (state == null || state.category == null) {
+            state = new ProductListState();
+            CategoryToProductListState previousState = getStateFromPreviousScreen();
+            CategoryItem category = previousState.category;
+            model.onUpdatedDataFromPreviousScreen(category, new ArrayList<>());
+            state.category=model.getCatalogData();
+        }
+
+       ProductDetailToListState FavoriteState = getStateFromNextScreen();
+        if(FavoriteState!=null){
+                model.onUpdatedDataFromNextScreen(FavoriteState.product, FavoriteState.isFavorite);
+        }
+
+        state.favorites= model.getStoredData();
+
 
         // update the view
         view.get().onRefreshViewWithUpdatedData(state);
+
+
 
     }
 
@@ -64,6 +108,7 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         Log.e(TAG, "onBackButtonPressed()");
 
         // TODO: include code if necessary
+        view.get().navigateToPreviousScreen();
     }
 
     @Override
@@ -71,6 +116,7 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         Log.e(TAG, "onPauseCalled()");
 
         // TODO: include code if necessary
+        saveScreenState();
     }
 
     @Override
@@ -84,6 +130,12 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         Log.e(TAG, "onItemSelected()");
 
         // TODO: include code if necessary
+        ProductListToDetailState nextState = new ProductListToDetailState();
+        nextState.product=product;
+        nextState.isFavorite= model.isFavorite(product);
+
+        passStateToNextScreen(nextState);
+        view.get().navigateToNextScreen();
     }
 
     private ProductListState getSavedScreenState() {

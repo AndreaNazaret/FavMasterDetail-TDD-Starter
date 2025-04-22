@@ -40,6 +40,7 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         Log.e(TAG, "onRecreateCalled()");
 
         // TODO: include code if necessary
+        state = getSavedScreenState();
     }
 
     @Override
@@ -49,6 +50,12 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         // TODO: include code if necessary
 
         // update the view
+        if (state == null) {
+            state = new CategoryListState();
+            state.categories = model.getCatalogData();
+            state.favorites = model.getStoredData();
+
+        }
         view.get().onRefreshViewWithUpdatedData(state);
 
     }
@@ -58,6 +65,7 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         Log.e(TAG, "onBackButtonPressed()");
 
         // TODO: include code if necessary
+        // Navegación por defecto, no se requiere lógica personalizada aquí.
     }
 
     @Override
@@ -65,6 +73,7 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         Log.e(TAG, "onPauseCalled()");
 
         // TODO: include code if necessary
+        saveScreenState();
     }
 
     @Override
@@ -78,6 +87,11 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         Log.e(TAG, "onItemSelected()");
 
         // TODO: include code if necessary
+        CategoryToProductListState newState = new CategoryToProductListState();
+        newState.category = category;
+        passStateToNextScreen(newState);
+
+        view.get().navigateToNextScreen();
     }
 
     private CategoryListState getSavedScreenState() {

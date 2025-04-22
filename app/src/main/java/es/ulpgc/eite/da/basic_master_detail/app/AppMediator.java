@@ -1,7 +1,10 @@
 package es.ulpgc.eite.da.basic_master_detail.app;
 
 
+import java.util.List;
+
 import es.ulpgc.eite.da.basic_master_detail.categories.CategoryListState;
+import es.ulpgc.eite.da.basic_master_detail.data.ProductItem;
 import es.ulpgc.eite.da.basic_master_detail.product.ProductDetailState;
 import es.ulpgc.eite.da.basic_master_detail.products.ProductListState;
 

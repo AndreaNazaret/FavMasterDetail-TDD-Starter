@@ -15,7 +15,7 @@ public class ProductListModel implements ProductListContract.Model {
 
     public static String TAG = "Master-Detail.ProductListModel";
 
-    private List<ProductItem> favorites;
+    private static List<ProductItem> favorites;
     private CategoryItem category;
 
     public ProductListModel() {
@@ -81,7 +81,9 @@ public class ProductListModel implements ProductListContract.Model {
         // Log.e(TAG, "onUpdatedDataFromPreviousScreen()");
 
         this.category=category;
-        this.favorites = favorites;
+        if (this.favorites == null || this.favorites.isEmpty()) {
+            this.favorites = favorites;
+        }
     }
 
 }
