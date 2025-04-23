@@ -3,11 +3,15 @@ package es.ulpgc.eite.da.basic_master_detail.categories;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import es.ulpgc.eite.da.basic_master_detail.app.AppMediator;
 import es.ulpgc.eite.da.basic_master_detail.app.CategoryToProductListState;
 import es.ulpgc.eite.da.basic_master_detail.app.ProductToCategoryListState;
 import es.ulpgc.eite.da.basic_master_detail.data.CategoryItem;
+import es.ulpgc.eite.da.basic_master_detail.data.ProductItem;
 
 
 // Project: Basic Master-Detail
@@ -41,6 +45,11 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
 
         // TODO: include code if necessary
         state = getSavedScreenState();
+        if (state.favorites != null) {
+            for (Map.Entry<CategoryItem, List<ProductItem>> entry : state.favorites.entrySet()) {
+                model.onUpdatedDataFromNextScreen(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     @Override
@@ -48,13 +57,23 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         Log.e(TAG, "onResumeCalled()");
 
         // TODO: include code if necessary
+        ProductToCategoryListState nextState = getStateFromNextScreen();
+        if (nextState != null && nextState.favorites != null && nextState.category != null) {
+            model.onUpdatedDataFromNextScreen(nextState.category, nextState.favorites);
 
-        // update the view
+            if (state.favorites == null) {
+                state.favorites = new HashMap<>();
+            }
+            state.favorites.put(nextState.category, nextState.favorites);
+        } else {
+            state.favorites = model.getStoredData();
+        }
+
+
         if (state == null) {
             state = new CategoryListState();
             state.categories = model.getCatalogData();
             state.favorites = model.getStoredData();
-
         }
         view.get().onRefreshViewWithUpdatedData(state);
 
@@ -89,6 +108,7 @@ public class CategoryListPresenter implements CategoryListContract.Presenter {
         // TODO: include code if necessary
         CategoryToProductListState newState = new CategoryToProductListState();
         newState.category = category;
+        newState.favorites= model.getStoredData(category);
         passStateToNextScreen(newState);
 
         view.get().navigateToNextScreen();

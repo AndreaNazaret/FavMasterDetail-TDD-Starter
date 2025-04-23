@@ -52,7 +52,13 @@ public class ProductListPresenter implements ProductListContract.Presenter {
             CategoryToProductListState previousState = getStateFromPreviousScreen();
             CategoryItem category = previousState.category;
 
-            model.onUpdatedDataFromPreviousScreen(category, model.getStoredData());
+            if (previousState.favorites != null) {
+                model.onUpdatedDataFromPreviousScreen(category, previousState.favorites);
+                state.favorites = previousState.favorites;
+            } else {
+                model.onUpdatedDataFromPreviousScreen(category, model.getStoredData());
+                state.favorites = model.getStoredData();
+            }
 
             state.category = model.getCatalogData();
         }
@@ -108,6 +114,10 @@ public class ProductListPresenter implements ProductListContract.Presenter {
         Log.e(TAG, "onBackButtonPressed()");
 
         // TODO: include code if necessary
+        ProductToCategoryListState passState = new ProductToCategoryListState();
+        passState.category=state.category;
+        passState.favorites=state.favorites;
+        passStateToPreviousScreen(passState);
         view.get().navigateToPreviousScreen();
     }
 
